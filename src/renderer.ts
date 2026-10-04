@@ -41,6 +41,7 @@ export class Renderer {
   private readonly colors = new Uint32Array(this.data);
   private readonly textures = new WeakMap<HTMLImageElement, WebGLTexture>();
 
+  private image: HTMLImageElement | null = null;
   private texture: WebGLTexture | null = null;
   private start = 0;
   private quads = 0;
@@ -117,11 +118,10 @@ export class Renderer {
     flip = false,
     tint = 0xffffff,
   ): void {
-    const texture = this.upload(sheet.image);
-
-    if (texture !== this.texture) {
+    if (sheet.image !== this.image) {
       this.flush();
-      this.texture = texture;
+      this.image = sheet.image;
+      this.texture = this.upload(sheet.image);
     }
 
     if (this.quads === MAX_QUADS) {

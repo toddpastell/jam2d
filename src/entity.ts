@@ -9,7 +9,7 @@ export abstract class Entity {
   x = 0;
   y = 0;
   layer = 0;
-  fixed = false;
+  scroll = 1;
   visible = true;
   removed = false;
 

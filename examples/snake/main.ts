@@ -38,7 +38,7 @@ class Mouse extends Sprite<"idle"> {
   constructor() {
     super(
       Sheet.from(mouseUrl, CELL),
-      { idle: { frames: [0, 1], speed: 400 } },
+      { idle: { frames: [0, 1], frameMS: 400 } },
       "idle",
     );
   }

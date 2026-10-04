@@ -5,7 +5,7 @@ export default defineConfig({
     alias: { jam2d: "/src/index.ts" },
   },
   server: {
-    open: "/examples/basic/",
+    open: "/examples/",
   },
   build: {
     lib: {

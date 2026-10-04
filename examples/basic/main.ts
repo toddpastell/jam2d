@@ -34,9 +34,16 @@ const LEVEL = [
   "#.......##.............#.......#",
   "#......................#.......#",
   "#...().............()..........#",
-  "#..(==)...........(==).........#",
-  "#==============================#",
+  "#..(==)#~~~~~~~~#.(==).........#",
+  "#======#wwwwwwww#==============#",
   "################################",
+];
+
+const HILLS = [
+  ".............()...........",
+  "..()........(==)..........",
+  ".(==)..()..(====)..()..().",
+  "(====)(==)(======)(==)(==)",
 ];
 
 class Player extends Sprite<"idle" | "walk"> {
@@ -47,7 +54,7 @@ class Player extends Sprite<"idle" | "walk"> {
     super(
       Sheet.from(mouseUrl, 8),
       {
-        idle: { frames: [0, 1], speed: 400 },
+        idle: { frames: [0, 1], frameMS: 400 },
         walk: { frames: [5, 6, 7, 8, 9] },
       },
       "idle",
@@ -95,10 +102,27 @@ class Example extends Scene {
 
     this.add(
       new Tilemap(Sheet.from(worldUrl, 8), LEVEL, {
-        legend: { "#": 1, "(": 2, ")": 3, "=": 4 },
+        legend: {
+          "#": 1,
+          "(": 2,
+          ")": 3,
+          "=": 4,
+          "~": { frames: [5, 6, 7, 8], frameMS: 250 },
+          w: 9,
+        },
         solid: "#=",
       }),
     );
+
+    // Added after the level, so all(Tilemap)[0] is still the level.
+    const hills = this.add(
+      new Tilemap(Sheet.from(worldUrl, 8), HILLS, {
+        legend: { "(": 10, ")": 11, "=": 12 },
+      }),
+    );
+    hills.y = 112;
+    hills.scroll = 0.5;
+    hills.layer = -1;
 
     const statue = this.add(new Statue());
     statue.x = width / 2 - 24;
@@ -111,7 +135,7 @@ class Example extends Scene {
     player.layer = 1;
 
     const label = this.add(
-      new Label("hello, mouse!", { x: 12, y: 8, layer: 2, fixed: true }),
+      new Label("hello, mouse!", { x: 12, y: 8, layer: 2, scroll: 0 }),
     );
 
     const stop = label.timers.every(250, () => {
