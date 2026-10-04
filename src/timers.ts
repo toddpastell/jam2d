@@ -7,6 +7,8 @@ interface Timer {
 }
 
 export class Timers {
+  elapsed = 0;
+
   private readonly timers: Timer[] = [];
 
   after(delay: number, callback: () => void): () => void {
@@ -22,6 +24,8 @@ export class Timers {
   }
 
   update(deltaMS: number): void {
+    this.elapsed += deltaMS;
+
     const { timers } = this;
     const count = timers.length;
 

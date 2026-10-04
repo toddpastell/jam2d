@@ -1,23 +1,18 @@
+import { type Animation, frameAt } from "./animation";
 import { Entity } from "./entity";
 import { Rect } from "./rect";
 import type { Renderer } from "./renderer";
 import type { Sheet } from "./sheet";
-
-export type Animation = {
-  frames: number[];
-  speed?: number;
-};
 
 export abstract class Sprite<State extends string = string> extends Entity {
   protected readonly sheet: Sheet;
   protected readonly animations: Record<State, Animation>;
 
   state: State;
-  frame = 0;
   flip = false;
   body: Rect;
 
-  private elapsed = 0;
+  private started = 0;
 
   constructor(
     sheet: Sheet,
@@ -41,20 +36,7 @@ export abstract class Sprite<State extends string = string> extends Entity {
     if (state === this.state) return;
 
     this.state = state;
-    this.frame = 0;
-    this.elapsed = 0;
-  }
-
-  animate(deltaMS: number) {
-    const animation = this.animations[this.state];
-    const speed = animation.speed ?? 100;
-
-    this.elapsed += deltaMS;
-
-    if (this.elapsed < speed) return;
-
-    this.elapsed -= speed;
-    this.frame = (this.frame + 1) % animation.frames.length;
+    this.started = this.timers.elapsed;
   }
 
   draw(renderer: Renderer, cameraX: number, cameraY: number): void {
@@ -62,7 +44,10 @@ export abstract class Sprite<State extends string = string> extends Entity {
 
     renderer.draw(
       this.sheet,
-      this.animations[this.state].frames[this.frame],
+      frameAt(
+        this.animations[this.state],
+        this.timers.elapsed - this.started,
+      ),
       this.x - cellWidth / 2 - cameraX,
       this.y - cellHeight / 2 - cameraY,
       this.flip,

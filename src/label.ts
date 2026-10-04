@@ -11,7 +11,7 @@ export interface LabelOptions {
   y?: number;
   fill?: number;
   layer?: number;
-  fixed?: boolean;
+  scroll?: number;
 }
 
 export class Label extends Entity {
@@ -32,7 +32,7 @@ export class Label extends Entity {
     this.x = options.x ?? defaults.x ?? this.x;
     this.y = options.y ?? defaults.y ?? this.y;
     this.layer = options.layer ?? defaults.layer ?? this.layer;
-    this.fixed = options.fixed ?? defaults.fixed ?? this.fixed;
+    this.scroll = options.scroll ?? defaults.scroll ?? this.scroll;
   }
 
   draw(renderer: Renderer, cameraX: number, cameraY: number): void {

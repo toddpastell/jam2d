@@ -28,7 +28,7 @@ class Hero extends Sprite<"idle" | "walk"> {
     super(
       Sheet.from(heroUrl, 8),
       {
-        idle: { frames: [0, 1], speed: 400 },
+        idle: { frames: [0, 1], frameMS: 400 },
         walk: { frames: [2, 3, 4, 5] },
       },
       "idle",
@@ -99,14 +99,14 @@ class Level extends Scene {
 
 - **`add(entity)`** puts an entity in the scene, and **`remove(entity)`** takes it out. A removed entity stops updating and drawing right away.
 - **`all(Type)`** returns every entity of that class.
-- **`camera`** scrolls the world. Entities marked `fixed` (such as a HUD) ignore it.
+- **`camera`** scrolls the world. Each entity's `scroll` sets how much the camera moves it: 1 by default, 0 for a HUD, and something like 0.5 for a parallax background. Collision ignores `scroll`, so keep anything solid at 1.
 - **`timers`** belong to the scene, and stop when you switch away.
 
 ### Entity
 
 The base of everything in a scene: `Sprite`, `Label` and `Tilemap` all extend it. Every entity has:
 
-- `x`, `y`, `layer`, `visible` and `fixed`
+- `x`, `y`, `layer`, `visible` and `scroll`
 - `update(deltaMS)`, called every frame
 - `init()` and `deinit()`, called when it's added to or removed from a scene
 - `timers`, which stop when the entity is removed
@@ -118,7 +118,7 @@ The base of everything in a scene: `Sprite`, `Label` and `Tilemap` all extend it
 
 An animated image from a sprite sheet, positioned by its center.
 
-- **`play(state)`** switches animation. Each state lists sheet cells and a frame time in ms (default 100).
+- **`play(state)`** switches animation. Each state lists sheet cells and `frameMS`, how long each frame shows (default 100).
 - **`flip`** mirrors it horizontally.
 - **`body`** is its hitbox, a `Rect` relative to its center. By default it's the size of one cell.
 
@@ -129,13 +129,13 @@ Text in the built-in [monogram](https://datagoblin.itch.io/monogram) pixel font.
 ```ts
 Label.defaultOptions.fill = 0xa2ffcb; // default color for every label
 
-const score = this.add(new Label("score: 0", { x: 4, y: 4, fixed: true }));
+const score = this.add(new Label("score: 0", { x: 4, y: 4, scroll: 0 }));
 score.text = "score: 10";
 ```
 
 ### Tilemap
 
-A level drawn with ASCII art. `legend` maps characters to sheet cells, and `solid` lists the characters that block movement.
+A level drawn with ASCII art. `legend` maps characters to sheet cells, or to an animation like a sprite's, and `solid` lists the characters that block movement.
 
 ```ts
 this.add(
@@ -144,13 +144,18 @@ this.add(
     [
       "##########",
       "#........#",
-      "#..^^....#",
+      "#..^^.~~~#",
       "##########",
     ],
-    { legend: { "#": 1, "^": 2 }, solid: "#" },
+    {
+      legend: { "#": 1, "^": 2, "~": { frames: [3, 4, 5], frameMS: 250 } },
+      solid: "#",
+    },
   ),
 );
 ```
+
+Animated tiles with the same character stay in sync.
 
 Move sprites through it so walls stop them:
 
@@ -163,7 +168,7 @@ level.moveY(this, dy);
 if (level.touches(this, "^")) this.die(); // any character works as a trigger
 ```
 
-`at(x, y)` returns the character at a point. The tilemap always sits at the world origin.
+`at(x, y)` returns the character at a point. Move a tilemap with `x` and `y`; collision moves with it.
 
 ### Collision
 
@@ -201,9 +206,11 @@ const stop = this.timers.every(250, () => (this.visible = !this.visible));
 stop(); // cancels a timer
 ```
 
+`timers.elapsed` is how long, in ms, an entity or scene has been running. To animate your own entities, `frameAt(animation, timers.elapsed)` returns the sheet cell to draw. To start an animation from its first frame, save `timers.elapsed` when it starts and pass `timers.elapsed - start` instead.
+
 ## Example
 
-The repo includes a small platformer example. To run it:
+The repo includes a few small examples: a platformer, snake and falldown. To open them:
 
 ```bash
 pnpm install

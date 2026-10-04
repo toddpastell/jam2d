@@ -4,7 +4,6 @@ import { Input } from "./input";
 import monogramUrl from "./monogram.png";
 import { Renderer } from "./renderer";
 import type { Scene } from "./scene";
-import { Sprite } from "./sprite";
 
 export interface GameOptions {
   width?: number;
@@ -135,8 +134,6 @@ export class Game {
 
       entity.timers.update(deltaMS);
       entity.update(deltaMS);
-
-      if (entity instanceof Sprite) entity.animate(deltaMS);
     }
 
     scene.timers.update(deltaMS);
@@ -152,16 +149,18 @@ export class Game {
     const scene = this.current;
 
     if (scene) {
-      const cameraX = Math.round(scene.camera.x);
-      const cameraY = Math.round(scene.camera.y);
+      const { x, y } = scene.camera;
 
       sortByLayer(scene.entities);
 
       for (const entity of scene.entities) {
         if (!entity.visible) continue;
 
-        if (entity.fixed) entity.draw(renderer, 0, 0);
-        else entity.draw(renderer, cameraX, cameraY);
+        entity.draw(
+          renderer,
+          Math.round(x * entity.scroll),
+          Math.round(y * entity.scroll),
+        );
       }
     }
 
