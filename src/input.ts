@@ -1,5 +1,13 @@
 export type Control =
-  "left" | "right" | "up" | "down" | "a" | "b" | "start" | "select";
+  | "left"
+  | "right"
+  | "up"
+  | "down"
+  | "a"
+  | "b"
+  | "start"
+  | "select"
+  | "click";
 
 const KEYS: Record<Control, string[]> = {
   left: ["ArrowLeft", "KeyA"],
@@ -10,6 +18,8 @@ const KEYS: Record<Control, string[]> = {
   b: ["KeyX"],
   start: ["Enter"],
   select: ["ShiftLeft", "ShiftRight"],
+  // Not a real key code: pointer events set this bit.
+  click: ["Click"],
 };
 
 const CONTROLS = Object.keys(KEYS) as Control[];
@@ -26,23 +36,41 @@ const MASKS = CONTROLS.map((control) =>
   KEYS[control].reduce((mask, code) => mask | BY_CODE.get(code)!, 0),
 );
 
+const CLICK = BY_CODE.get("Click")!;
+
 export class Input {
+  readonly pointer = { x: 0, y: 0 };
+
+  private canvas!: HTMLCanvasElement;
   private keys = 0;
   private current = 0;
   private previous = 0;
 
-  init(): void {
+  init(canvas: HTMLCanvasElement): void {
+    this.canvas = canvas;
+    canvas.style.touchAction = "none";
+
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("keyup", this.onKeyUp);
     window.addEventListener("blur", this.onBlur);
     document.addEventListener("visibilitychange", this.onVisibilityChange);
+    canvas.addEventListener("pointerdown", this.onPointerDown);
+    canvas.addEventListener("pointermove", this.onPointer);
+    canvas.addEventListener("pointerup", this.onPointer);
+    canvas.addEventListener("pointercancel", this.onPointerCancel);
   }
 
   deinit(): void {
+    const { canvas } = this;
+
     window.removeEventListener("keydown", this.onKeyDown);
     window.removeEventListener("keyup", this.onKeyUp);
     window.removeEventListener("blur", this.onBlur);
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
+    canvas.removeEventListener("pointerdown", this.onPointerDown);
+    canvas.removeEventListener("pointermove", this.onPointer);
+    canvas.removeEventListener("pointerup", this.onPointer);
+    canvas.removeEventListener("pointercancel", this.onPointerCancel);
 
     this.onBlur();
   }
@@ -95,6 +123,30 @@ export class Input {
     if (!bit) return;
 
     this.keys &= ~bit;
+  };
+
+  private onPointerDown = (event: PointerEvent): void => {
+    this.canvas.setPointerCapture(event.pointerId);
+    this.onPointer(event);
+  };
+
+  private onPointer = (event: PointerEvent): void => {
+    const { canvas, pointer } = this;
+    const rect = canvas.getBoundingClientRect();
+
+    pointer.x = Math.floor(
+      ((event.clientX - rect.left) * canvas.width) / rect.width,
+    );
+    pointer.y = Math.floor(
+      ((event.clientY - rect.top) * canvas.height) / rect.height,
+    );
+
+    if (event.buttons & 1) this.keys |= CLICK;
+    else this.keys &= ~CLICK;
+  };
+
+  private onPointerCancel = (): void => {
+    this.keys &= ~CLICK;
   };
 
   private onBlur = (): void => {

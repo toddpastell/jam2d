@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+### Added
+
+- **Mouse and touch input:** `input.pointer` gives the position in game pixels on screen, and the `"click"` control works with `held`, `pressed` and `released`.
+
 ## 0.1.0
 
 ### Breaking

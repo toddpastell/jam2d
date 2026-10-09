@@ -62,7 +62,7 @@ export class Game {
 
     await load([...assets, monogramUrl]);
 
-    this.input.init();
+    this.input.init(this.canvas);
 
     window.addEventListener("resize", this.onResize);
     this.onResize();

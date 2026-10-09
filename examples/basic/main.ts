@@ -150,9 +150,16 @@ class Example extends Scene {
   }
 
   update(): void {
-    const { width, height } = this.game;
+    const { width, height, input } = this.game;
     const player = this.all(Player)[0];
     const level = this.all(Tilemap)[0];
+
+    // Click to move the statue, converting the pointer from screen to world.
+    if (input.pressed("click")) {
+      const statue = this.all(Statue)[0];
+      statue.x = input.pointer.x + this.camera.x;
+      statue.y = input.pointer.y + this.camera.y;
+    }
 
     this.camera.x = Math.max(
       0,

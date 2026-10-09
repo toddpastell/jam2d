@@ -184,7 +184,7 @@ Pass the tilemap as the third argument so the push never goes into a wall.
 
 ### Input
 
-Retro console-style controls (a d-pad plus A, B, Start and Select), read with `game.input`:
+Retro console-style controls (a d-pad plus A, B, Start and Select) and a pointer, read with `game.input`:
 
 | Control | Keys |
 | --- | --- |
@@ -193,10 +193,12 @@ Retro console-style controls (a d-pad plus A, B, Start and Select), read with `g
 | `b` | X |
 | `start` | Enter |
 | `select` | Shift |
+| `click` | left mouse button or touch |
 
 - **`held(control)`** is true while it's down.
 - **`pressed(control)`** and **`released(control)`** are true on the frame it changes.
 - **`x`** and **`y`** are -1, 0 or 1 for the direction keys.
+- **`pointer.x`** and **`pointer.y`** are the mouse or touch position in game pixels on screen. Add `scene.camera` for a world position.
 
 ### Timers
 
