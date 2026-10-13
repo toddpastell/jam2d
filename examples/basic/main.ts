@@ -1,4 +1,13 @@
-import { collide, Game, Label, Scene, Sheet, Sprite, Tilemap } from "jam2d";
+import {
+  collide,
+  Game,
+  Label,
+  Particles,
+  Scene,
+  Sheet,
+  Sprite,
+  Tilemap,
+} from "jam2d";
 import mouseUrl from "./mouse.png";
 import worldUrl from "./world.png";
 
@@ -64,6 +73,7 @@ class Player extends Sprite<"idle" | "walk"> {
   update(deltaMS: number): void {
     const { input } = this.game;
     const level = this.scene.all(Tilemap)[0];
+    const wasGrounded = this.grounded;
 
     if (this.grounded && input.pressed("a")) this.vy = -JUMP;
     this.vy = Math.min(this.vy + GRAVITY * deltaMS, MAX_FALL);
@@ -82,6 +92,10 @@ class Player extends Sprite<"idle" | "walk"> {
 
       if (side === "bottom") this.grounded = true;
       if (side === "bottom" || side === "top") this.vy = 0;
+    }
+
+    if (this.grounded && !wasGrounded) {
+      this.scene.all(Particles)[0].emit(this.x, this.y + this.body.bottom, 6);
     }
 
     if (input.x !== 0) this.flip = input.x < 0;
@@ -123,6 +137,17 @@ class Example extends Scene {
     hills.y = 112;
     hills.scroll = 0.5;
     hills.layer = -1;
+
+    const dust = this.add(
+      new Particles(Sheet.from(worldUrl, 8), {
+        frames: [13, 14, 15, 16],
+        life: 400,
+        dx: [-0.04, 0.04],
+        dy: [-0.05, -0.03],
+        ddy: 0.0002,
+      }),
+    );
+    dust.layer = 1;
 
     const statue = this.add(new Statue());
     statue.x = width / 2 - 24;

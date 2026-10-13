@@ -2,10 +2,10 @@
 
 A tiny, dependency-free pixel game engine for game jams.
 
-- **Tiny:** about 7 kB gzipped, including a built-in pixel font, and no dependencies.
+- **Tiny:** about 8 kB gzipped, including a built-in pixel font, and no dependencies.
 - **Pixel-perfect:** renders at a low resolution (160×144 by default) and scales up by whole pixels.
 - **Fast:** a WebGL2 sprite batcher that draws a whole screen in a few draw calls.
-- **Just enough:** scenes, animated sprites, text, tilemaps with collision, timers, keyboard input and a camera.
+- **Just enough:** scenes, animated sprites, text, tilemaps with collision, particles, timers, keyboard input and a camera.
 
 ## Install
 
@@ -104,7 +104,7 @@ class Level extends Scene {
 
 ### Entity
 
-The base of everything in a scene: `Sprite`, `Label` and `Tilemap` all extend it. Every entity has:
+The base of everything in a scene: `Sprite`, `Label`, `Tilemap` and `Particles` all extend it. Every entity has:
 
 - `x`, `y`, `layer`, `visible` and `scroll`
 - `update(deltaMS)`, called every frame
@@ -169,6 +169,29 @@ if (level.touches(this, "^")) this.die(); // any character works as a trigger
 ```
 
 `at(x, y)` returns the character at a point. Move a tilemap with `x` and `y`; collision moves with it.
+
+### Particles
+
+One entity that draws a whole pool of particles, for dust, sparks and splashes. It allocates nothing after it's created.
+
+```ts
+const dust = this.add(new Particles(Sheet.from(worldUrl, 8), {
+  frames: [13, 14, 15, 16], // played once over each particle's life
+  life: 400,                // ms
+  dx: [-0.04, 0.04],        // px/ms, random between min and max
+  dy: [-0.05, -0.03],
+  ddy: 0.0002,              // px/ms², added to dy every ms
+}));
+
+dust.emit(x, y, 6);
+```
+
+- **`emit(x, y, count)`** takes a world position. Particles stay where they were emitted, so the entity's own `x` and `y` aren't used.
+- Each particle starts with a random `dx` and `dy` from its range, and `ddx` and `ddy` change them over time. All four default to 0.
+- `frames` play once over each particle's `life`. Draw a fade into the frames, since there's no transparency.
+- Particles aren't solid, and go through tilemaps and sprites.
+- At most `capacity` particles (default 256) are alive at once; extra ones are dropped. `count` is how many are alive, and `clear()` removes them all.
+- For a steady stream, use a timer: `timers.every(50, () => dust.emit(x, y))`.
 
 ### Collision
 
