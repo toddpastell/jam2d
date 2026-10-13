@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0
+
+### Added
+
+- **Particles:** one entity that draws a pool of particles, for dust, sparks and splashes, without allocating. Call `emit(x, y, count)` with a world position.
+- Examples: dust when the mouse lands in `basic`.
+
 ## 0.2.0
 
 ### Added
