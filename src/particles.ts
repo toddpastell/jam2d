@@ -118,6 +118,8 @@ export class Particles extends Entity {
         frameAt(animation, age[i]),
         px[i] - cameraX,
         py[i] - cameraY,
+        false,
+        this.tint,
       );
     }
   }

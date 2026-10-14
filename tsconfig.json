@@ -22,8 +22,8 @@
 
     /* Examples import the engine by package name */
     "paths": {
-      "jam2d": ["./src/index.ts"],
-    },
+      "jam2d": ["./src/index.ts"]
+    }
   },
-  "include": ["src", "examples"],
+  "include": ["src", "examples"]
 }

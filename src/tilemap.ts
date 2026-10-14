@@ -16,6 +16,7 @@ export class Tilemap extends Entity {
   readonly rows: number;
 
   private readonly solid: string;
+  private readonly chars: string[];
   private readonly cells: Int16Array;
   private readonly tiles: Animation[];
   private readonly current: Int16Array;
@@ -28,7 +29,7 @@ export class Tilemap extends Entity {
     super();
 
     this.sheet = sheet;
-    this.map = map;
+    this.map = [...map];
     this.solid = solid;
     this.columns = map[0].length;
     this.rows = map.length;
@@ -37,12 +38,11 @@ export class Tilemap extends Entity {
       typeof tile === "number" ? { frames: [tile] } : tile,
     );
     this.current = new Int16Array(this.tiles.length);
-
-    const chars = Object.keys(legend);
+    this.chars = Object.keys(legend);
 
     for (let row = 0; row < this.rows; row++) {
       for (let column = 0; column < this.columns; column++) {
-        const id = chars.indexOf(map[row][column]);
+        const id = this.chars.indexOf(map[row][column]);
         if (id >= 0) this.cells[row * this.columns + column] = id;
       }
     }
@@ -61,6 +61,17 @@ export class Tilemap extends Entity {
     const row = Math.floor((y - this.y) / this.sheet.cellHeight);
 
     return this.map[row]?.[column];
+  }
+
+  set(x: number, y: number, char: string): void {
+    const column = Math.floor((x - this.x) / this.sheet.cellWidth);
+    const row = Math.floor((y - this.y) / this.sheet.cellHeight);
+    const line = this.map[row];
+
+    if (line === undefined || column < 0 || column >= this.columns) return;
+
+    this.map[row] = line.slice(0, column) + char + line.slice(column + 1);
+    this.cells[row * this.columns + column] = this.chars.indexOf(char);
   }
 
   touches(sprite: Sprite, chars: string): boolean {
@@ -139,6 +150,8 @@ export class Tilemap extends Entity {
           current[id],
           column * cellWidth - cameraX,
           row * cellHeight - cameraY,
+          false,
+          this.tint,
         );
       }
     }
@@ -151,7 +164,8 @@ export class Tilemap extends Entity {
 
     if (dx === 0 || !this.touches(sprite, this.solid)) return false;
 
-    const edge = sprite.x - this.x + (dx > 0 ? sprite.body.right : sprite.body.left);
+    const edge =
+      sprite.x - this.x + (dx > 0 ? sprite.body.right : sprite.body.left);
     const snap = dx > 0 ? Math.floor : Math.ceil;
 
     sprite.x += snap(edge / cellWidth) * cellWidth - edge;
@@ -165,7 +179,8 @@ export class Tilemap extends Entity {
 
     if (dy === 0 || !this.touches(sprite, this.solid)) return false;
 
-    const edge = sprite.y - this.y + (dy > 0 ? sprite.body.bottom : sprite.body.top);
+    const edge =
+      sprite.y - this.y + (dy > 0 ? sprite.body.bottom : sprite.body.top);
     const snap = dy > 0 ? Math.floor : Math.ceil;
 
     sprite.y += snap(edge / cellHeight) * cellHeight - edge;

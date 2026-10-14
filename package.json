@@ -1,6 +1,6 @@
 {
   "name": "jam2d",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A tiny, dependency-free pixel game engine for game jams.",
   "keywords": [
     "game",
@@ -30,11 +30,13 @@
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json",
     "dev": "vite",
+    "format": "prettier --write .",
     "prepublishOnly": "pnpm build",
     "sort": "sort-package-json",
     "typecheck": "tsc"
   },
   "devDependencies": {
+    "prettier": "^3.9.10",
     "sort-package-json": "^4.0.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.0"

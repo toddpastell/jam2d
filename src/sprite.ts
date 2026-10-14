@@ -1,11 +1,11 @@
-import { type Animation, frameAt } from "./animation";
+import { type Animation, finished, frameAt } from "./animation";
 import { Entity } from "./entity";
 import { Rect } from "./rect";
 import type { Renderer } from "./renderer";
 import type { Sheet } from "./sheet";
 
 export abstract class Sprite<State extends string = string> extends Entity {
-  protected readonly sheet: Sheet;
+  readonly sheet: Sheet;
   protected readonly animations: Record<State, Animation>;
 
   state: State;
@@ -32,7 +32,14 @@ export abstract class Sprite<State extends string = string> extends Entity {
     );
   }
 
-  play(state: State) {
+  get done(): boolean {
+    return finished(
+      this.animations[this.state],
+      this.timers.elapsed - this.started,
+    );
+  }
+
+  play(state: State): void {
     if (state === this.state) return;
 
     this.state = state;
@@ -44,13 +51,11 @@ export abstract class Sprite<State extends string = string> extends Entity {
 
     renderer.draw(
       this.sheet,
-      frameAt(
-        this.animations[this.state],
-        this.timers.elapsed - this.started,
-      ),
+      frameAt(this.animations[this.state], this.timers.elapsed - this.started),
       this.x - cellWidth / 2 - cameraX,
       this.y - cellHeight / 2 - cameraY,
       this.flip,
+      this.tint,
     );
   }
 }
