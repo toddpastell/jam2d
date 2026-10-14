@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased
+
+### Breaking
+
+- **A label's `fill` is now `tint`.** Every entity now has `tint`, and on a label it's the text color, so it works the same as before. Rename `fill` to `tint`, in options and in `Label.defaultOptions`.
+
+### Added
+
+- **Play-once animations:** set `loop: false` on an animation to play it once and hold the last frame. `sprite.done` turns true when it ends.
+- **`label.width` and `label.height`:** a label's size in pixels, for centering text.
+- **`tilemap.set(x, y, char)`:** changes the tile at a point. Collision and drawing follow the change.
+- **`tint` on every entity:** multiplies its colors. Use it on sprites for hit flashes and team colors, on tilemaps to darken a background, and on particles to color one set of frames.
+
+### Other
+
+- `sprite.sheet` is now public, like `tilemap.sheet` and `particles.sheet`.
+- Labels share one font sheet instead of creating their own.
+- Examples: `falldown` and `snake` center their text with `label.width` and `label.height`.
+
 ## 0.3.0
 
 ### Added

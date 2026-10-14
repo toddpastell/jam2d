@@ -1,13 +1,5 @@
 export type Control =
-  | "left"
-  | "right"
-  | "up"
-  | "down"
-  | "a"
-  | "b"
-  | "start"
-  | "select"
-  | "click";
+  "left" | "right" | "up" | "down" | "a" | "b" | "start" | "select" | "click";
 
 const KEYS: Record<Control, string[]> = {
   left: ["ArrowLeft", "KeyA"],

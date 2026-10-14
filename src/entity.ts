@@ -11,6 +11,7 @@ export abstract class Entity {
   layer = 0;
   scroll = 1;
   visible = true;
+  tint = 0xffffff;
   removed = false;
 
   readonly timers = new Timers();

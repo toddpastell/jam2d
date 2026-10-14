@@ -115,9 +115,8 @@ class Falldown extends Scene {
     this.player.y = 20;
 
     this.score = this.add(new Label("score 0", { x: 4, y: 2, layer: 2 }));
-    this.hint = this.add(
-      new Label("arrows to start", { x: 35, y: 28, layer: 2 }),
-    );
+    this.hint = this.add(new Label("arrows to start", { y: 28, layer: 2 }));
+    this.hint.x = (this.game.width - this.hint.width) / 2;
   }
 
   update(deltaMS: number): void {
@@ -193,9 +192,10 @@ class Falldown extends Scene {
     this.over = true;
     this.player.play("idle");
     for (const row of this.rows) row.visible = false;
-    this.add(
-      new Label("game over\npress start", { x: 47, y: 60, layer: 2 }),
-    );
+    const { width, height } = this.game;
+    const over = this.add(new Label("game over\npress start", { layer: 2 }));
+    over.x = (width - over.width) / 2;
+    over.y = (height - over.height) / 2;
   }
 }
 
@@ -203,7 +203,7 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(value, max));
 }
 
-Label.defaultOptions.fill = PALETTE.darkest;
+Label.defaultOptions.tint = PALETTE.darkest;
 
 const game = new Game();
 await game.init({

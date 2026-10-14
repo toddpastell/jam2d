@@ -107,6 +107,7 @@ class Level extends Scene {
 The base of everything in a scene: `Sprite`, `Label`, `Tilemap` and `Particles` all extend it. Every entity has:
 
 - `x`, `y`, `layer`, `visible` and `scroll`
+- `tint`, which multiplies its colors. `0xffffff` (the default) leaves them unchanged, `0xff8080` makes a sprite redder for a hit flash, and `0x808080` darkens a background tilemap. A label's tint is its text color.
 - `update(deltaMS)`, called every frame
 - `init()` and `deinit()`, called when it's added to or removed from a scene
 - `timers`, which stop when the entity is removed
@@ -119,6 +120,12 @@ The base of everything in a scene: `Sprite`, `Label`, `Tilemap` and `Particles` 
 An animated image from a sprite sheet, positioned by its center.
 
 - **`play(state)`** switches animation. Each state lists sheet cells and `frameMS`, how long each frame shows (default 100).
+- **`loop: false`** on a state plays it once and holds the last frame. **`done`** turns true when it ends:
+
+  ```ts
+  if (this.state === "attack" && this.done) this.play("idle");
+  ```
+
 - **`flip`** mirrors it horizontally.
 - **`body`** is its hitbox, a `Rect` relative to its center. By default it's the size of one cell.
 
@@ -127,11 +134,13 @@ An animated image from a sprite sheet, positioned by its center.
 Text in the built-in [monogram](https://datagoblin.itch.io/monogram) pixel font. Each character is 6×12 pixels, and `\n` starts a new line.
 
 ```ts
-Label.defaultOptions.fill = 0xa2ffcb; // default color for every label
+Label.defaultOptions.tint = 0xa2ffcb; // default color for every label
 
 const score = this.add(new Label("score: 0", { x: 4, y: 4, scroll: 0 }));
 score.text = "score: 10";
 ```
+
+`width` and `height` give its size in pixels, so centering is one line: `label.x = (this.game.width - label.width) / 2`.
 
 ### Tilemap
 
@@ -168,7 +177,7 @@ level.moveY(this, dy);
 if (level.touches(this, "^")) this.die(); // any character works as a trigger
 ```
 
-`at(x, y)` returns the character at a point. Move a tilemap with `x` and `y`; collision moves with it.
+`at(x, y)` returns the character at a point, and `set(x, y, char)` changes it, for coins, breakable blocks and doors. Collision and drawing follow the change, and a character that isn't in `legend` leaves an empty tile. Move a tilemap with `x` and `y`; collision moves with it.
 
 ### Particles
 
@@ -188,7 +197,7 @@ dust.emit(x, y, 6);
 
 - **`emit(x, y, count)`** takes a world position. Particles stay where they were emitted, so the entity's own `x` and `y` aren't used.
 - Each particle starts with a random `dx` and `dy` from its range, and `ddx` and `ddy` change them over time. All four default to 0.
-- `frames` play once over each particle's `life`. Draw a fade into the frames, since there's no transparency.
+- `frames` play once over each particle's `life`. Particles can't fade out in code, so draw the fade into the frames. Semi-transparent pixels in the image do blend.
 - Particles aren't solid, and go through tilemaps and sprites.
 - At most `capacity` particles (default 256) are alive at once; extra ones are dropped. `count` is how many are alive, and `clear()` removes them all.
 - For a steady stream, use a timer: `timers.every(50, () => dust.emit(x, y))`.
@@ -209,14 +218,14 @@ Pass the tilemap as the third argument so the push never goes into a wall.
 
 Retro console-style controls (a d-pad plus A, B, Start and Select) and a pointer, read with `game.input`:
 
-| Control | Keys |
-| --- | --- |
-| `left` `right` `up` `down` | arrow keys or WASD |
-| `a` | Z or Space |
-| `b` | X |
-| `start` | Enter |
-| `select` | Shift |
-| `click` | left mouse button or touch |
+| Control                    | Keys                       |
+| -------------------------- | -------------------------- |
+| `left` `right` `up` `down` | arrow keys or WASD         |
+| `a`                        | Z or Space                 |
+| `b`                        | X                          |
+| `start`                    | Enter                      |
+| `select`                   | Shift                      |
+| `click`                    | left mouse button or touch |
 
 - **`held(control)`** is true while it's down.
 - **`pressed(control)`** and **`released(control)`** are true on the frame it changes.

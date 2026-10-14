@@ -197,7 +197,7 @@ class Example extends Scene {
   }
 }
 
-Label.defaultOptions.fill = PALETTE.lightest;
+Label.defaultOptions.tint = PALETTE.lightest;
 
 const game = new Game();
 await game.init({

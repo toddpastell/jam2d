@@ -77,9 +77,8 @@ class Snake extends Scene {
     this.moveMouse();
 
     this.score = this.add(new Label("score 0", { x: 4, y: 2, layer: 2 }));
-    this.hint = this.add(
-      new Label("arrows to start", { x: 35, y: 100, layer: 2 }),
-    );
+    this.hint = this.add(new Label("arrows to start", { y: 100, layer: 2 }));
+    this.hint.x = (this.game.width - this.hint.width) / 2;
   }
 
   update(): void {
@@ -161,9 +160,10 @@ class Snake extends Scene {
 
   private lose(): void {
     this.over = true;
-    this.add(
-      new Label("game over\npress start", { x: 47, y: 60, layer: 2 }),
-    );
+    const { width, height } = this.game;
+    const over = this.add(new Label("game over\npress start", { layer: 2 }));
+    over.x = (width - over.width) / 2;
+    over.y = (height - over.height) / 2;
   }
 }
 
@@ -180,7 +180,7 @@ function rowOf(sprite: Sprite): number {
   return (sprite.y - CELL / 2) / CELL;
 }
 
-Label.defaultOptions.fill = PALETTE.lightest;
+Label.defaultOptions.tint = PALETTE.lightest;
 
 const game = new Game();
 await game.init({
