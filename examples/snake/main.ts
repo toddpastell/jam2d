@@ -1,6 +1,6 @@
 import { Game, Label, Scene, Sheet, Sprite, Tilemap } from "jam2d";
-import mouseUrl from "../basic/mouse.png";
-import worldUrl from "../basic/world.png";
+import mouseUrl from "../assets/mouse.png";
+import worldUrl from "../assets/world.png";
 
 const PALETTE = {
   darkest: 0x306141,

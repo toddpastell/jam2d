@@ -18,6 +18,8 @@
 - `sprite.sheet` is now public, like `tilemap.sheet` and `particles.sheet`.
 - Labels share one font sheet instead of creating their own.
 - Examples: `falldown` and `snake` center their text with `label.width` and `label.height`.
+- Examples: a new `memory` example, a card-matching game played with the mouse or touch.
+- Examples: `basic` is now `platformer`, and a new `basic` is the README's Quick start, for newcomers. The shared images moved to `examples/assets/`.
 
 ## 0.3.0
 

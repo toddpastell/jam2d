@@ -242,9 +242,9 @@ stop(); // cancels a timer
 
 `timers.elapsed` is how long, in ms, an entity or scene has been running. To animate your own entities, `frameAt(animation, timers.elapsed)` returns the sheet cell to draw. To start an animation from its first frame, save `timers.elapsed` when it starts and pass `timers.elapsed - start` instead.
 
-## Example
+## Examples
 
-The repo includes a few small examples: a platformer, snake and falldown. To open them:
+The repo includes a few small examples. Start with `basic`, which is the Quick start above, then try `platformer`, `snake`, `falldown` and `memory`. To open them:
 
 ```bash
 pnpm install
