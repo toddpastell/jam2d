@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+
+### Added
+
+- **Custom label fonts:** pass a `Sheet` as a label's `font` option, or set `Label.defaultOptions.font`. Its cells are in ASCII order starting with space. `label.font` swaps the font on an existing label.
+
 ## 0.4.0
 
 ### Breaking
