@@ -142,6 +142,12 @@ score.text = "score: 10";
 
 `width` and `height` give its size in pixels, so centering is one line: `label.x = (this.game.width - label.width) / 2`.
 
+For your own font, pass a `Sheet` as `font`. Its cells must be in ASCII order starting with space (32), left to right then top to bottom, at the cell size you give the sheet.
+
+```ts
+Label.defaultOptions.font = Sheet.from("tiny-font.png", 4, 6);
+```
+
 ### Tilemap
 
 A level drawn with ASCII art. `legend` maps characters to sheet cells, or to an animation like a sprite's, and `solid` lists the characters that block movement.

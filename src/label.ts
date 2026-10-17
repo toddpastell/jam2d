@@ -6,7 +6,7 @@ import { Sheet } from "./sheet";
 const FIRST_CHAR = 32;
 const NEWLINE = 10;
 
-let font: Sheet | undefined;
+let monogram: Sheet | undefined;
 
 export interface LabelOptions {
   x?: number;
@@ -14,6 +14,7 @@ export interface LabelOptions {
   tint?: number;
   layer?: number;
   scroll?: number;
+  font?: Sheet;
 }
 
 export class Label extends Entity {
@@ -21,7 +22,7 @@ export class Label extends Entity {
 
   text: string;
 
-  private readonly sheet = (font ??= Sheet.from(monogramUrl, 6, 12));
+  font: Sheet;
 
   constructor(text: string, options: LabelOptions = {}) {
     super();
@@ -34,6 +35,10 @@ export class Label extends Entity {
     this.y = options.y ?? defaults.y ?? this.y;
     this.layer = options.layer ?? defaults.layer ?? this.layer;
     this.scroll = options.scroll ?? defaults.scroll ?? this.scroll;
+    this.font =
+      options.font ??
+      defaults.font ??
+      (monogram ??= Sheet.from(monogramUrl, 6, 12));
   }
 
   get width(): number {
@@ -46,7 +51,7 @@ export class Label extends Entity {
       else longest = Math.max(longest, ++column);
     }
 
-    return longest * this.sheet.cellWidth;
+    return longest * this.font.cellWidth;
   }
 
   get height(): number {
@@ -57,11 +62,11 @@ export class Label extends Entity {
       if (text.charCodeAt(i) === NEWLINE) rows++;
     }
 
-    return rows * this.sheet.cellHeight;
+    return rows * this.font.cellHeight;
   }
 
   draw(renderer: Renderer, cameraX: number, cameraY: number): void {
-    const { sheet, text } = this;
+    const { font, text } = this;
     let column = 0;
     let row = 0;
 
@@ -76,10 +81,10 @@ export class Label extends Entity {
 
       if (code !== FIRST_CHAR) {
         renderer.draw(
-          sheet,
+          font,
           code - FIRST_CHAR,
-          this.x + column * sheet.cellWidth - cameraX,
-          this.y + row * sheet.cellHeight - cameraY,
+          this.x + column * font.cellWidth - cameraX,
+          this.y + row * font.cellHeight - cameraY,
           false,
           this.tint,
         );
