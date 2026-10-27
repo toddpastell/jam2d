@@ -265,7 +265,7 @@ this.timers.tween(this, { y: this.y - 8 }, 300, {
 - Start values are read when you call `tween`. When it ends, the fields land exactly on the end values, then `done` runs.
 - `stop()` freezes the fields where they are, and `done` doesn't run.
 - `ease` is `"linear"` (the default), `"in"`, `"out"`, `"inOut"`, `"back"` (overshoots, then settles) or `"bounce"`. A function from 0–1 to a value works too, and `ease` exports the built-in ones for your own math: `ease.out(0.5)`.
-- Tweens on the same field all run, and the newest one wins each frame. To replace a tween, call its `stop()` first.
+- Tweens on the same field all run, and the one that updates last wins each frame: within one `timers`, the newest, and a scene tween beats an entity tween (see update order). To replace a tween, call its `stop()` first.
 - To delay or chain tweens, use `after` and `done`.
 
 **Scene transitions.** Only one scene runs at a time, so a transition is an "out" in the old scene, then `switch()`, then an "in" in the new scene's `init`.
