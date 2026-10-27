@@ -1,4 +1,5 @@
 import { type Ease, ease as eases } from "./ease";
+import { lerp } from "./math";
 
 export type TweenOptions = {
   ease?: keyof typeof eases | Ease;
@@ -45,7 +46,7 @@ export class Timers {
     const ends = to as Record<string, number>;
     const keys = Object.keys(ends);
 
-    return this.add(ms, false, done, {
+    return this.add(Math.max(ms, 0), false, done, {
       target: values,
       keys,
       from: keys.map((key) => values[key]),
@@ -116,7 +117,9 @@ export class Timers {
 
 // At the end it lands exactly on `to`, so grid moves don't drift.
 function step({ target, keys, from, to, ease }: Tween, t: number): void {
+  const eased = t < 1 ? ease(t) : 1;
+
   for (let i = 0; i < keys.length; i++) {
-    target[keys[i]] = t < 1 ? from[i] + (to[i] - from[i]) * ease(t) : to[i];
+    target[keys[i]] = t < 1 ? lerp(from[i], to[i], eased) : to[i];
   }
 }

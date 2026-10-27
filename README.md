@@ -116,7 +116,7 @@ The base of everything in a scene: `Sprite`, `Label`, `Tilemap` and `Particles` 
 
 **Draw order:** entities draw by `layer`, lowest first. Within a layer, they draw in the order they were added. Put a tilemap on a lower layer than your sprites to keep it behind them.
 
-**Update order:** each frame, every entity runs its `timers` and then its `update`, in the order they were added. Then the scene runs its `timers` and its `update`.
+**Update order:** each frame, every entity runs its `timers` and then its `update`, in draw order: by `layer`, then in the order they were added. Then the scene runs its `timers` and its `update`.
 
 ### Sprite
 
@@ -261,7 +261,7 @@ this.timers.tween(this, { y: this.y - 8 }, 300, {
 });
 ```
 
-- The target can be any object with number fields: an entity, `scene.camera` or a plain object such as `{ t: 0 }`.
+- The target can be any object with number fields: an entity, `scene.camera` or a plain object such as `{ t: 0 }`. Colors like `tint` don't tween directly; tween a `{ t }` and use [`mix`](#helpers).
 - Start values are read when you call `tween`. When it ends, the fields land exactly on the end values, then `done` runs.
 - `stop()` freezes the fields where they are, and `done` doesn't run.
 - `ease` is `"linear"` (the default), `"in"`, `"out"`, `"inOut"`, `"back"` (overshoots, then settles) or `"bounce"`. A function from 0–1 to a value works too, and `ease` exports the built-in ones for your own math: `ease.out(0.5)`.
@@ -301,7 +301,7 @@ this.timers.tween(this, { y: this.y - 8 }, 300, {
 ```ts
 lerp(0, 10, 0.5); // 5
 clamp(player.x, 0, 160);
-random(-1, 1); // any number from -1 up to 1
+random(-1, 1); // any number from -1 up to, but not including, 1
 randomInt(1, 6); // a whole number from 1 to 6, both included
 mix(0xff0000, 0x0000ff, 0.5); // 0x800080, halfway between two colors
 ```
