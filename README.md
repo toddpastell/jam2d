@@ -5,7 +5,7 @@ A tiny, dependency-free pixel game engine for game jams.
 - **Tiny:** about 8 kB gzipped, including a built-in pixel font, and no dependencies.
 - **Pixel-perfect:** renders at a low resolution (160×144 by default) and scales up by whole pixels.
 - **Fast:** a WebGL2 sprite batcher that draws a whole screen in a few draw calls.
-- **Just enough:** scenes, animated sprites, text, tilemaps with collision, particles, timers, keyboard input and a camera.
+- **Just enough:** scenes, animated sprites, text, tilemaps with collision, particles, timers, tweens, keyboard input and a camera.
 
 ## Install
 
@@ -101,12 +101,13 @@ class Level extends Scene {
 - **`all(Type)`** returns every entity of that class.
 - **`camera`** scrolls the world. Each entity's `scroll` sets how much the camera moves it: 1 by default, 0 for a HUD, and something like 0.5 for a parallax background. Collision ignores `scroll`, so keep anything solid at 1.
 - **`timers`** belong to the scene, and stop when you switch away.
+- **`reset()`** is used by the engine when you switch away, so don't define your own `reset` in a scene.
 
 ### Entity
 
 The base of everything in a scene: `Sprite`, `Label`, `Tilemap` and `Particles` all extend it. Every entity has:
 
-- `x`, `y`, `layer`, `visible` and `scroll`
+- `x`, `y`, `layer`, `visible` and `scroll`. Positions can be fractional: drawing rounds them to whole pixels, so there's no sub-pixel shimmer.
 - `tint`, which multiplies its colors. `0xffffff` (the default) leaves them unchanged, `0xff8080` makes a sprite redder for a hit flash, and `0x808080` darkens a background tilemap. A label's tint is its text color.
 - `update(deltaMS)`, called every frame
 - `init()` and `deinit()`, called when it's added to or removed from a scene
@@ -115,17 +116,20 @@ The base of everything in a scene: `Sprite`, `Label`, `Tilemap` and `Particles` 
 
 **Draw order:** entities draw by `layer`, lowest first. Within a layer, they draw in the order they were added. Put a tilemap on a lower layer than your sprites to keep it behind them.
 
+**Update order:** each frame, every entity runs its `timers` and then its `update`, in the order they were added. Then the scene runs its `timers` and its `update`.
+
 ### Sprite
 
 An animated image from a sprite sheet, positioned by its center.
 
-- **`play(state)`** switches animation. Each state lists sheet cells and `frameMS`, how long each frame shows (default 100).
+- **`play(state)`** switches animation. Each state lists sheet cells and `frameMS`, how long each frame shows (default 100). Playing the state that's already playing does nothing, unless you pass `true` to start it again from the first frame: `play("hop", true)`.
 - **`loop: false`** on a state plays it once and holds the last frame. **`done`** turns true when it ends:
 
   ```ts
   if (this.state === "attack" && this.done) this.play("idle");
   ```
 
+- **`duration(animation)`** is how long one pass of an animation takes, in ms. Use it to time a tween to an animation.
 - **`flip`** mirrors it horizontally.
 - **`body`** is its hitbox, a `Rect` relative to its center. By default it's the size of one cell.
 
@@ -245,6 +249,45 @@ this.timers.after(1000, () => this.explode());
 const stop = this.timers.every(250, () => (this.visible = !this.visible));
 stop(); // cancels a timer
 ```
+
+**Tweens** move number fields to new values over time:
+
+```ts
+const stop = this.timers.tween(this, { x: 64, y: 32 }, 400);
+
+this.timers.tween(this, { y: this.y - 8 }, 300, {
+  ease: "out",
+  done: () => this.scene.remove(this),
+});
+```
+
+- The target can be any object with number fields: an entity, `scene.camera` or a plain object such as `{ t: 0 }`.
+- Start values are read when you call `tween`. When it ends, the fields land exactly on the end values, then `done` runs.
+- `stop()` freezes the fields where they are, and `done` doesn't run.
+- `ease` is `"linear"` (the default), `"in"`, `"out"`, `"inOut"`, `"back"` (overshoots, then settles) or `"bounce"`. A function from 0–1 to a value works too, and `ease` exports the built-in ones for your own math: `ease.out(0.5)`.
+- Tweens on the same field all run, and the newest one wins each frame. To replace a tween, call its `stop()` first.
+- To delay or chain tweens, use `after` and `done`.
+
+**Scene transitions.** Only one scene runs at a time, so a transition is an "out" in the old scene, then `switch()`, then an "in" in the new scene's `init`.
+
+- **Fade to black:** tween a brightness and use it as every entity's tint. This replaces tints the game has set, such as a label's color, and `game.background` doesn't fade, so it suits a black background.
+
+  ```ts
+  private fade = { light: 1 };
+
+  leave(next: Scene): void {
+    this.timers.tween(this.fade, { light: 0 }, 300, {
+      done: () => this.game.switch(next),
+    });
+  }
+
+  update(): void {
+    const tint = Math.round(this.fade.light * 255) * 0x010101;
+    for (const entity of this.entities) entity.tint = tint;
+  }
+  ```
+
+- **Slide in:** in the new scene's `init`, set `this.camera.x = -this.game.width` and tween it to 0. Entities with `scroll: 0` stay still.
 
 `timers.elapsed` is how long, in ms, an entity or scene has been running. To animate your own entities, `frameAt(animation, timers.elapsed)` returns the sheet cell to draw. To start an animation from its first frame, save `timers.elapsed` when it starts and pass `timers.elapsed - start` instead.
 

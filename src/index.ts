@@ -1,5 +1,6 @@
-export { type Animation, frameAt } from "./animation";
+export { type Animation, duration, frameAt } from "./animation";
 export { collide, type Side } from "./collision";
+export { ease, type Ease } from "./ease";
 export { Entity } from "./entity";
 export { Game, type GameOptions } from "./game";
 export { Input, type Control } from "./input";
@@ -11,4 +12,4 @@ export { Scene } from "./scene";
 export { Sheet } from "./sheet";
 export { Sprite } from "./sprite";
 export { Tilemap, type TilemapOptions } from "./tilemap";
-export { Timers } from "./timers";
+export { Timers, type TweenOptions } from "./timers";

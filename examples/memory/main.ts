@@ -48,6 +48,15 @@ class Card extends Sprite<"back" | "show" | "hide"> {
     return this.state === "back" || (this.state === "hide" && this.done);
   }
 
+  hop(): void {
+    const { y } = this;
+
+    this.timers.tween(this, { y: y - 6 }, 150, {
+      ease: "out",
+      done: () => this.timers.tween(this, { y }, 400, { ease: "bounce" }),
+    });
+  }
+
   contains(x: number, y: number): boolean {
     const { body } = this;
 
@@ -143,6 +152,7 @@ class Memory extends Scene {
     this.timers.after(200, () => {
       for (const card of [a, b]) {
         card.tint = PALETTE.light;
+        card.hop();
         this.sparkles.emit(card.x, card.y, 8);
       }
     });

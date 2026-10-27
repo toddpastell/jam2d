@@ -171,6 +171,8 @@ class Example extends Scene {
       stop();
       label.visible = true;
       label.text = "go explore!";
+      label.y = -label.height;
+      label.timers.tween(label, { y: 8 }, 500, { ease: "back" });
     });
   }
 
