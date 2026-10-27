@@ -1,7 +1,9 @@
 import {
+  clamp,
   Entity,
   Game,
   Label,
+  randomInt,
   Rect,
   type Renderer,
   Scene,
@@ -42,7 +44,7 @@ class Row extends Entity {
   }
 
   shuffle(): void {
-    this.gap = Math.floor(Math.random() * (COLUMNS - GAP + 1));
+    this.gap = randomInt(0, COLUMNS - GAP);
   }
 
   draw(renderer: Renderer, cameraX: number, cameraY: number): void {
@@ -197,10 +199,6 @@ class Falldown extends Scene {
     over.x = (width - over.width) / 2;
     over.y = (height - over.height) / 2;
   }
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(value, max));
 }
 
 Label.defaultOptions.tint = PALETTE.darkest;

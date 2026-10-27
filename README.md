@@ -270,26 +270,43 @@ this.timers.tween(this, { y: this.y - 8 }, 300, {
 
 **Scene transitions.** Only one scene runs at a time, so a transition is an "out" in the old scene, then `switch()`, then an "in" in the new scene's `init`.
 
-- **Fade to black:** tween a brightness and use it as every entity's tint. This replaces tints the game has set, such as a label's color, and `game.background` doesn't fade, so it suits a black background.
+- **Fade to black:** tween a plain `{ t }`, and each frame use `mix` to darken every entity's tint and the background. Fade the new scene in the same way, with `t` going from 1 to 0.
 
   ```ts
-  private fade = { light: 1 };
+  private fade = { t: 0 };
 
   leave(next: Scene): void {
-    this.timers.tween(this.fade, { light: 0 }, 300, {
+    this.timers.tween(this.fade, { t: 1 }, 300, {
       done: () => this.game.switch(next),
     });
   }
 
   update(): void {
-    const tint = Math.round(this.fade.light * 255) * 0x010101;
+    const { t } = this.fade;
+    const tint = mix(0xffffff, 0x000000, t);
+
     for (const entity of this.entities) entity.tint = tint;
+    this.game.background = mix(BACKGROUND, 0x000000, t);
   }
   ```
+
+  This replaces tints the game has set. To keep a label's color, mix from that color instead of white.
 
 - **Slide in:** in the new scene's `init`, set `this.camera.x = -this.game.width` and tween it to 0. Entities with `scroll: 0` stay still.
 
 `timers.elapsed` is how long, in ms, an entity or scene has been running. To animate your own entities, `frameAt(animation, timers.elapsed)` returns the sheet cell to draw. To start an animation from its first frame, save `timers.elapsed` when it starts and pass `timers.elapsed - start` instead.
+
+### Helpers
+
+```ts
+lerp(0, 10, 0.5); // 5
+clamp(player.x, 0, 160);
+random(-1, 1); // any number from -1 up to 1
+randomInt(1, 6); // a whole number from 1 to 6, both included
+mix(0xff0000, 0x0000ff, 0.5); // 0x800080, halfway between two colors
+```
+
+`mix` makes colors tweenable: tween a plain `{ t }` and set `tint = mix(from, to, t)` each frame, for example to fade a hit flash back to normal.
 
 ## Examples
 

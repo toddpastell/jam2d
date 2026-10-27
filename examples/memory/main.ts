@@ -1,4 +1,4 @@
-import { Game, Label, Particles, Scene, Sheet, Sprite } from "jam2d";
+import { Game, Label, Particles, randomInt, Scene, Sheet, Sprite } from "jam2d";
 import worldUrl from "../assets/world.png";
 import cardsUrl from "./cards.png";
 
@@ -176,7 +176,7 @@ class Memory extends Scene {
 
 function shuffle<T>(items: T[]): T[] {
   for (let i = items.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = randomInt(0, i);
     [items[i], items[j]] = [items[j], items[i]];
   }
 

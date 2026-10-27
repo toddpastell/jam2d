@@ -1,5 +1,6 @@
 import { type Animation, frameAt } from "./animation";
 import { Entity } from "./entity";
+import { random } from "./math";
 import type { Renderer } from "./renderer";
 import type { Sheet } from "./sheet";
 
@@ -65,13 +66,15 @@ export class Particles extends Entity {
   }
 
   emit(x: number, y: number, count = 1): void {
+    const { dx, dy } = this;
+
     for (let n = 0; n < count && this.alive < this.capacity; n++) {
       const i = this.alive++;
 
       this.px[i] = x;
       this.py[i] = y;
-      this.pdx[i] = between(this.dx);
-      this.pdy[i] = between(this.dy);
+      this.pdx[i] = random(dx[0], dx[1]);
+      this.pdy[i] = random(dy[0], dy[1]);
       this.age[i] = 0;
     }
   }
@@ -123,8 +126,4 @@ export class Particles extends Entity {
       );
     }
   }
-}
-
-function between([min, max]: [number, number]): number {
-  return min + Math.random() * (max - min);
 }

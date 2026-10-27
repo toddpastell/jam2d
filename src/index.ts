@@ -5,6 +5,7 @@ export { Entity } from "./entity";
 export { Game, type GameOptions } from "./game";
 export { Input, type Control } from "./input";
 export { Label, type LabelOptions } from "./label";
+export { clamp, lerp, mix, random, randomInt } from "./math";
 export { Particles, type ParticlesOptions } from "./particles";
 export { Rect } from "./rect";
 export { Renderer } from "./renderer";
