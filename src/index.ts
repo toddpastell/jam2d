@@ -1,9 +1,11 @@
-export { type Animation, frameAt } from "./animation";
+export { type Animation, duration, frameAt } from "./animation";
 export { collide, type Side } from "./collision";
+export { ease, type Ease } from "./ease";
 export { Entity } from "./entity";
 export { Game, type GameOptions } from "./game";
 export { Input, type Control } from "./input";
 export { Label, type LabelOptions } from "./label";
+export { clamp, lerp, mix, random, randomInt } from "./math";
 export { Particles, type ParticlesOptions } from "./particles";
 export { Rect } from "./rect";
 export { Renderer } from "./renderer";
@@ -11,4 +13,4 @@ export { Scene } from "./scene";
 export { Sheet } from "./sheet";
 export { Sprite } from "./sprite";
 export { Tilemap, type TilemapOptions } from "./tilemap";
-export { Timers } from "./timers";
+export { Timers, type TweenOptions } from "./timers";

@@ -1,4 +1,4 @@
-import { Game, Label, Scene, Sheet, Sprite, Tilemap } from "jam2d";
+import { Game, Label, randomInt, Scene, Sheet, Sprite, Tilemap } from "jam2d";
 import mouseUrl from "../assets/mouse.png";
 import worldUrl from "../assets/world.png";
 
@@ -147,8 +147,8 @@ class Snake extends Scene {
     let row: number;
 
     do {
-      column = 1 + Math.floor(Math.random() * 18);
-      row = 3 + Math.floor(Math.random() * 14);
+      column = randomInt(1, 18);
+      row = randomInt(3, 16);
     } while (this.hits(column, row, true));
 
     place(this.mouse, column, row);

@@ -39,8 +39,8 @@ export abstract class Sprite<State extends string = string> extends Entity {
     );
   }
 
-  play(state: State): void {
-    if (state === this.state) return;
+  play(state: State, reset = false): void {
+    if (state === this.state && !reset) return;
 
     this.state = state;
     this.started = this.timers.elapsed;

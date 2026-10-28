@@ -15,9 +15,10 @@ export function frameAt(
   ];
 }
 
-export function finished(
-  { frames, frameMS = 100, loop = true }: Animation,
-  elapsedMS: number,
-): boolean {
-  return !loop && elapsedMS >= frames.length * frameMS;
+export function duration({ frames, frameMS = 100 }: Animation): number {
+  return frames.length * frameMS;
+}
+
+export function finished(animation: Animation, elapsedMS: number): boolean {
+  return animation.loop === false && elapsedMS >= duration(animation);
 }

@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.6.0
+
+### Added
+
+- **Tweens:** `timers.tween(target, { x: 64 }, 400, { ease: "out", done })` moves number fields to new values over time, on any object. It returns `stop()`, like `after` and `every`, and lands exactly on the end values.
+- **Easing:** a tween's `ease` is `"linear"` (the default), `"in"`, `"out"`, `"inOut"`, `"back"` or `"bounce"`, or your own function. The `ease` export has the built-in ones as functions.
+- **Helpers:** `lerp`, `clamp`, `random`, `randomInt` (includes the max) and `mix`, which blends two colors so tints can be tweened.
+- **`play(state, true)`** starts an animation again from its first frame, even if it's already playing.
+- **`duration(animation)`:** how long one pass of an animation takes, in ms.
+
+### Other
+
+- README: update order, rounding of positions when drawing, `Scene.reset()`, and recipes for fade and slide scene transitions.
+- Examples: matched cards hop in `memory`, and the platformer's message drops in. `falldown`, `snake` and `memory` use the new helpers.
+
 ## 0.5.0
 
 ### Added

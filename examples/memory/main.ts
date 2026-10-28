@@ -1,4 +1,4 @@
-import { Game, Label, Particles, Scene, Sheet, Sprite } from "jam2d";
+import { Game, Label, Particles, randomInt, Scene, Sheet, Sprite } from "jam2d";
 import worldUrl from "../assets/world.png";
 import cardsUrl from "./cards.png";
 
@@ -46,6 +46,15 @@ class Card extends Sprite<"back" | "show" | "hide"> {
 
   get faceDown(): boolean {
     return this.state === "back" || (this.state === "hide" && this.done);
+  }
+
+  hop(): void {
+    const { y } = this;
+
+    this.timers.tween(this, { y: y - 6 }, 150, {
+      ease: "out",
+      done: () => this.timers.tween(this, { y }, 400, { ease: "bounce" }),
+    });
   }
 
   contains(x: number, y: number): boolean {
@@ -143,6 +152,7 @@ class Memory extends Scene {
     this.timers.after(200, () => {
       for (const card of [a, b]) {
         card.tint = PALETTE.light;
+        card.hop();
         this.sparkles.emit(card.x, card.y, 8);
       }
     });
@@ -166,7 +176,7 @@ class Memory extends Scene {
 
 function shuffle<T>(items: T[]): T[] {
   for (let i = items.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = randomInt(0, i);
     [items[i], items[j]] = [items[j], items[i]];
   }
 
